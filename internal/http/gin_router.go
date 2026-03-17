@@ -8,6 +8,7 @@ import (
 	"github.com/Revan84/homeapp_backend/internal/auth"
 	"github.com/Revan84/homeapp_backend/internal/config"
 	"github.com/Revan84/homeapp_backend/internal/homes"
+	"github.com/Revan84/homeapp_backend/internal/rooms"
 )
 
 // NewGinRouter initializes the Gin router and registers all routes.
@@ -15,7 +16,9 @@ func NewGinRouter(db *sql.DB, cfg config.Config) *gin.Engine {
 
 	router := gin.Default()
 
-	// Health endpoints
+	// =========================
+	// HEALTH CHECKS
+	// =========================
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{"status": "ok"})
 	})
@@ -46,6 +49,15 @@ func NewGinRouter(db *sql.DB, cfg config.Config) *gin.Engine {
 	homeHandler := homes.NewGinHandler(homeService)
 
 	registerHomeRoutes(router, homeHandler, jwtManager)
+
+	// =========================
+	// ROOMS MODULE
+	// =========================
+	roomRepo := rooms.NewRepository(db)
+	roomService := rooms.NewService(roomRepo)
+	roomHandler := rooms.NewGinHandler(roomService)
+
+	registerRoomRoutes(router, roomHandler, jwtManager)
 
 	return router
 }
