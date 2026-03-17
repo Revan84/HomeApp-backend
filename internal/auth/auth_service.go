@@ -19,7 +19,6 @@ func (s *Service) Register(
 	email string,
 	password string,
 ) (string, error) {
-
 	hash, err := HashPassword(password)
 	if err != nil {
 		return "", err
@@ -38,7 +37,6 @@ func (s *Service) Login(
 	email string,
 	password string,
 ) (string, error) {
-
 	id, hash, err := s.repo.FindByEmail(ctx, email)
 	if err != nil {
 		return "", err
@@ -49,4 +47,11 @@ func (s *Service) Login(
 	}
 
 	return s.jwt.Generate(id)
+}
+
+func (s *Service) Me(
+	ctx context.Context,
+	userID int64,
+) (*User, error) {
+	return s.repo.FindUserByID(ctx, userID)
 }

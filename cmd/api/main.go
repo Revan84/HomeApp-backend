@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 
 	"github.com/joho/godotenv"
 
@@ -26,16 +25,11 @@ func main() {
 
 	log.Println("Database connected successfully")
 
-	router := httpapp.NewRouter(db, cfg)
-
-	server := &http.Server{
-		Addr:    ":" + cfg.AppPort,
-		Handler: router,
-	}
+	router := httpapp.NewGinRouter(db, cfg)
 
 	log.Printf("API listening on :%s", cfg.AppPort)
 
-	if err := server.ListenAndServe(); err != nil {
+	if err := router.Run(":" + cfg.AppPort); err != nil {
 		log.Fatal(err)
 	}
 }
